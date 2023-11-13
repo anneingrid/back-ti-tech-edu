@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 
+
 const prisma = new PrismaClient();
 const app = express();
 const port = 3001;
@@ -63,4 +64,26 @@ app.post('/login', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
+});
+
+app.post('/registroPergunta', async (req, res) => {
+    const prisma = new PrismaClient();
+
+    const { titulo, descricao, cursoRelacionado } = req.body;
+
+    try {
+        const perguntaNova = await prisma.pergunta.create({
+            data: {
+                titulo, 
+                descricao, 
+                cursoRelacionado
+            }
+        });
+
+        res.json(perguntaNova);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+    }
 });
