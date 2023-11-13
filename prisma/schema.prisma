@@ -13,3 +13,10 @@ model User {
   nome  String?
   img   String?
 }
+
+model Pergunta {
+  id    Int     @id @default(autoincrement())
+  titulo String
+  descricao String
+  cursoRelacionado String
+}
