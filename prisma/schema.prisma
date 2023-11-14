@@ -21,3 +21,13 @@ model Pergunta {
   descricao String
   cursoRelacionado String
 }
+
+model Job {
+  id        String  @id @unique @default(uuid())
+  title     String
+  nameCompany String
+  location String
+  description   String
+  imageURL String
+  link String
+}
