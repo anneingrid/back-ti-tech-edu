@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 
-
 const prisma = new PrismaClient();
 const app = express();
 const port = 3001;
@@ -10,6 +9,9 @@ const port = 3001;
 app.use(express.json());
 app.use(cors());
 
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+});
 
 app.post('/registro', async (req, res) => {
     const { nome, email, senha } = req.body;
@@ -50,7 +52,7 @@ app.post('/login', async (req, res) => {
         if (!usuario) {
             return res.status(400).json({ message: 'Email não encontrado.' });
         }
-        
+
         if (usuario.senha !== senha) {
             return res.status(401).json({ message: 'Senha incorreta.' });
         }
@@ -81,8 +83,19 @@ app.post('/preferencia', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+app.post('/usuario', async (req, res) => {
+    const { id } = req.body;
+    try {
+        const usuario = await prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        res.status(200).json({ nomeUsuario: usuario.nome });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 });
 
 app.post('/registroPergunta', async (req, res) => {
