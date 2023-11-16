@@ -31,3 +31,12 @@ model Pergunta {
   descricao        String
   cursoRelacionado String
 }
+
+model Cursos {
+  id    Int     @id @default(autoincrement())
+  categoria String
+  titulo String
+  imgSrc String
+  alt String
+  doc String
+}
