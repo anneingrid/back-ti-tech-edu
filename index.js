@@ -48,19 +48,38 @@ app.post('/login', async (req, res) => {
         });
 
         if (!usuario) {
-            return res.status(400).send('Email não encontrado.');
+            return res.status(400).json({ message: 'Email não encontrado.' });
+        }
+        
+        if (usuario.senha !== senha) {
+            return res.status(401).json({ message: 'Senha incorreta.' });
         }
 
-        if (user.senha !== senha) {
-            return res.status(401).send('Senha incorreta.');
-        }
-
-        res.status(200).send('Login bem-sucedido.');
+        res.status(200).json({ idUsuario: usuario.id });
     } catch (error) {
         res.status(500).send(error.message);
     }
 });
 
+app.post('/preferencia', async (req, res) => {
+    const { interesse1, interesse2, interesse3, interesse4, experiencia, usuario } = req.body;
+    try {
+        const usuarioNovo = await prisma.preferencia.create({
+            data: {
+                areaDeInteresse1: interesse1 || null,
+                areaDeInteresse2: interesse2 || null,
+                areaDeInteresse3: interesse3 || null,
+                areaDeInteresse4: interesse4 || null,
+                nivelDeExperiencia: experiencia,
+                idUsuario: usuario
+            }
+        });
+
+        res.json(usuarioNovo);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
@@ -74,8 +93,8 @@ app.post('/registroPergunta', async (req, res) => {
     try {
         const perguntaNova = await prisma.pergunta.create({
             data: {
-                titulo, 
-                descricao, 
+                titulo,
+                descricao,
                 cursoRelacionado
             }
         });
