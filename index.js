@@ -119,3 +119,32 @@ app.post('/registroPergunta', async (req, res) => {
         res.status(500).send(error.message);
     }
 });
+
+app.get('/perguntas', async (req, res) => {
+    const prisma = new PrismaClient();
+    try {
+        const perguntas = await prisma.pergunta.findMany();
+        res.json(perguntas);
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
+app.post('/pergunta', async (req, res) => {
+    const prisma = new PrismaClient();
+    const { id } = req.body;
+    const idPergunta = parseInt(id)
+    try {
+        const pergunta = await prisma.pergunta.findUnique({
+            where: {
+                id: idPergunta
+            }
+        })
+        res.json(pergunta);
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+});
