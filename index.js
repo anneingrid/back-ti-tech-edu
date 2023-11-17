@@ -140,7 +140,12 @@ app.post('/pergunta', async (req, res) => {
         const pergunta = await prisma.pergunta.findUnique({
             where: {
                 id: idPergunta
-            }
+            },
+            include: {
+                comentarios: {
+                  // Aqui você pode personalizar a seleção de campos dos comentários se necessário
+                },
+              },
         })
         res.json(pergunta);
     }
@@ -148,3 +153,33 @@ app.post('/pergunta', async (req, res) => {
         res.status(500).send(error.message);
     }
 });
+
+app.post('/comentario', async (req, res) => {
+    const prisma = new PrismaClient();
+    const { descricao, id } = req.body;
+    const idPergunta = parseInt(id);
+
+    try {
+        const pergunta = await prisma.pergunta.findUnique({
+            where: { id: idPergunta },
+        });
+
+        if (!pergunta) {
+            return res.status(404).json({ error: 'Pergunta não encontrada' });
+        }
+
+        const comentario = await prisma.comentario.create({
+            data: {
+                descricao,
+                pergunta: { connect: { id: pergunta.id } }, 
+            },
+        });
+
+        return res.status(201).json(comentario);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+

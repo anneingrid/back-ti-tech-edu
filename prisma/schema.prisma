@@ -26,10 +26,12 @@ model Preferencia {
 }
 
 model Pergunta {
-  id               Int    @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   titulo           String
   descricao        String
   cursoRelacionado String
+  comentarios      Comentario[]
+  dataPergunta     DateTime  @default(now())
 }
 
 model Cursos {
@@ -39,4 +41,12 @@ model Cursos {
   imgSrc String
   alt String
   doc String
+}
+
+model Comentario {
+  id          Int      @id @default(autoincrement())
+  descricao   String
+  dataComentario DateTime @default(now())
+  perguntaId  Int?
+  pergunta    Pergunta? @relation(fields: [perguntaId], references: [id])
 }
