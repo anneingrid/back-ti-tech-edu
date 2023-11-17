@@ -41,6 +41,7 @@ model Cursos {
   imgSrc String
   alt String
   doc String
+  video String?
 }
 
 model Comentario {

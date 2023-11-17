@@ -120,6 +120,36 @@ app.post('/registroPergunta', async (req, res) => {
     }
 });
 
+
+  app.get('/cursos', async (req, res) => {
+    const prisma = new PrismaClient();
+    try {
+        const cursos = await prisma.cursos.findMany();
+        res.json(cursos);
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
+app.post('/curso', async (req, res) => {
+    const prisma = new PrismaClient();
+    const { id } = req.body;
+    const idCurso = parseInt(id)
+    try {
+        const curso = await prisma.cursos.findUnique({
+            where: {
+                id: idCurso
+            }
+        })
+        res.json(curso);
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
 app.get('/perguntas', async (req, res) => {
     const prisma = new PrismaClient();
     try {
