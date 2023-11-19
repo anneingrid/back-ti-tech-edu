@@ -21,33 +21,38 @@ model Preferencia {
   areaDeInteresse2   String?
   areaDeInteresse3   String?
   areaDeInteresse4   String?
+  areaDeInteresse5   String?
+  areaDeInteresse6   String?
+  areaDeInteresse7   String?
+  areaDeInteresse8   String?
+  areaDeInteresse9   String?
   nivelDeExperiencia String?
-  idUsuario          String
+  idUsuario          String @unique
 }
 
 model Pergunta {
-  id               Int      @id @default(autoincrement())
+  id               Int          @id @default(autoincrement())
   titulo           String
   descricao        String
   cursoRelacionado String
   comentarios      Comentario[]
-  dataPergunta     DateTime  @default(now())
+  dataPergunta     DateTime     @default(now())
 }
 
 model Cursos {
-  id    Int     @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   categoria String
-  titulo String
-  imgSrc String
-  alt String
-  doc String
-  video String?
+  titulo    String
+  imgSrc    String
+  alt       String
+  doc       String
+  video     String?
 }
 
 model Comentario {
-  id          Int      @id @default(autoincrement())
-  descricao   String
-  dataComentario DateTime @default(now())
-  perguntaId  Int?
-  pergunta    Pergunta? @relation(fields: [perguntaId], references: [id])
+  id             Int       @id @default(autoincrement())
+  descricao      String
+  dataComentario DateTime  @default(now())
+  perguntaId     Int?
+  pergunta       Pergunta? @relation(fields: [perguntaId], references: [id])
 }

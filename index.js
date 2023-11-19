@@ -64,7 +64,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/preferencia', async (req, res) => {
-    const { interesse1, interesse2, interesse3, interesse4, experiencia, usuario } = req.body;
+    const { interesse1, interesse2, interesse3, interesse4, interesse5, interesse6, interesse7, interesse8, interesse9, experiencia, usuario } = req.body;
     try {
         const usuarioNovo = await prisma.preferencia.create({
             data: {
@@ -72,6 +72,11 @@ app.post('/preferencia', async (req, res) => {
                 areaDeInteresse2: interesse2 || null,
                 areaDeInteresse3: interesse3 || null,
                 areaDeInteresse4: interesse4 || null,
+                areaDeInteresse5: interesse5 || null,
+                areaDeInteresse6: interesse6 || null,
+                areaDeInteresse7: interesse7 || null,
+                areaDeInteresse8: interesse8 || null,
+                areaDeInteresse9: interesse9 || null,
                 nivelDeExperiencia: experiencia,
                 idUsuario: usuario
             }
@@ -98,6 +103,58 @@ app.post('/usuario', async (req, res) => {
     }
 });
 
+app.post('/h', async (req, res) => {
+    try {
+        const { id } = req.body;
+        const preferencias = await prisma.preferencia.findFirst({
+            where: {
+                idUsuario: id
+            }
+        });
+
+        const condicao = [];
+
+        if (preferencias.areaDeInteresse1) {
+            condicao.push({ categoria: preferencias.areaDeInteresse1 });
+        }
+        if (preferencias.areaDeInteresse2) {
+            condicao.push({ categoria: preferencias.areaDeInteresse2 });
+        }
+        if (preferencias.areaDeInteresse3) {
+            condicao.push({ categoria: preferencias.areaDeInteresse3 });
+        }
+        if (preferencias.areaDeInteresse4) {
+            condicao.push({ categoria: preferencias.areaDeInteresse4 });
+        }
+        if (preferencias.areaDeInteresse5) {
+            condicao.push({ categoria: preferencias.areaDeInteresse5 });
+        }
+        if (preferencias.areaDeInteresse6) {
+            condicao.push({ categoria: preferencias.areaDeInteresse6 });
+        }
+        if (preferencias.areaDeInteresse7) {
+            condicao.push({ categoria: preferencias.areaDeInteresse7 });
+        }
+        if (preferencias.areaDeInteresse8) {
+            condicao.push({ categoria: preferencias.areaDeInteresse8 });
+        }
+        if (preferencias.areaDeInteresse9) {
+            condicao.push({ categoria: preferencias.areaDeInteresse9 });
+        }
+
+        const cursos = await prisma.cursos.findMany({
+            where: {
+                OR: condicao.length > 0 ? condicao : undefined
+            }
+        });
+
+        res.json(cursos);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
 app.post('/registroPergunta', async (req, res) => {
     const prisma = new PrismaClient();
 
@@ -121,7 +178,7 @@ app.post('/registroPergunta', async (req, res) => {
 });
 
 
-  app.get('/cursos', async (req, res) => {
+app.get('/cursos', async (req, res) => {
     const prisma = new PrismaClient();
     try {
         const cursos = await prisma.cursos.findMany();
@@ -147,7 +204,7 @@ app.post('/curso', async (req, res) => {
     }
     catch (error) {
         res.status(500).send(error.message);
-    }
+    }
 });
 
 app.get('/perguntas', async (req, res) => {
@@ -173,9 +230,9 @@ app.post('/pergunta', async (req, res) => {
             },
             include: {
                 comentarios: {
-                  // Aqui você pode personalizar a seleção de campos dos comentários se necessário
+                    // Aqui você pode personalizar a seleção de campos dos comentários se necessário
                 },
-              },
+            },
         })
         res.json(pergunta);
     }
@@ -201,7 +258,7 @@ app.post('/comentario', async (req, res) => {
         const comentario = await prisma.comentario.create({
             data: {
                 descricao,
-                pergunta: { connect: { id: pergunta.id } }, 
+                pergunta: { connect: { id: pergunta.id } },
             },
         });
 
