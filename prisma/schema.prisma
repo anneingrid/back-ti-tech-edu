@@ -47,6 +47,7 @@ model Cursos {
   alt       String
   doc       String
   video     String?
+  status    Boolean?
 }
 
 model Comentario {
