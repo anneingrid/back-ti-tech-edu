@@ -157,15 +157,17 @@ app.post('/h', async (req, res) => {
 
 app.post('/registroPergunta', async (req, res) => {
     const prisma = new PrismaClient();
-
-    const { titulo, descricao, cursoRelacionado } = req.body;
-
+    const { usuario, titulo, descricao, cursoRelacionado } = req.body;
+    const like = 0;
+    console.log(usuario)
     try {
         const perguntaNova = await prisma.pergunta.create({
             data: {
-                titulo,
-                descricao,
-                cursoRelacionado
+                idUsuario: usuario,
+                titulo: titulo,
+                descricao: descricao,
+                cursoRelacionado: cursoRelacionado,
+                like: like,
             }
         });
 
@@ -210,7 +212,15 @@ app.post('/curso', async (req, res) => {
 app.get('/perguntas', async (req, res) => {
     const prisma = new PrismaClient();
     try {
-        const perguntas = await prisma.pergunta.findMany();
+        const perguntas = await prisma.pergunta.findMany(
+            {
+                include: {
+                    comentarios: true
+                }
+            }
+
+        );
+
         res.json(perguntas);
     }
     catch (error) {
@@ -230,7 +240,7 @@ app.post('/pergunta', async (req, res) => {
             },
             include: {
                 comentarios: {
-                    // Aqui você pode personalizar a seleção de campos dos comentários se necessário
+
                 },
             },
         })
@@ -269,4 +279,33 @@ app.post('/comentario', async (req, res) => {
     }
 });
 
+
+app.post('/like', async (req, res) => {
+    const prisma = new PrismaClient();
+    const { id } = req.body;
+    const idPergunta = parseInt(id);
+
+    try {
+        const pergunta = await prisma.pergunta.findUnique({
+            where: { id: idPergunta },
+        });
+        console.log(pergunta)
+
+        if (!pergunta) {
+            return res.status(404).json({ error: 'Pergunta não encontrada' });
+        }
+
+        const updatedPergunta = await prisma.pergunta.update({
+            where: { id: idPergunta },
+            data: {
+                like: pergunta.like + 1
+            },
+        });
+
+        return res.status(200).json(updatedPergunta);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
 

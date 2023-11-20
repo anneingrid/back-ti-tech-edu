@@ -32,11 +32,13 @@ model Preferencia {
 
 model Pergunta {
   id               Int          @id @default(autoincrement())
+  idUsuario        String?
   titulo           String
   descricao        String
   cursoRelacionado String
   comentarios      Comentario[]
   dataPergunta     DateTime     @default(now())
+  like             Int?
 }
 
 model Cursos {
