@@ -158,7 +158,7 @@ app.post('/h', async (req, res) => {
 app.post('/registroPergunta', async (req, res) => {
     const prisma = new PrismaClient();
     const { usuario, titulo, descricao, cursoRelacionado } = req.body;
-    const like = 0;
+    const likes = 0;
     console.log(usuario)
     try {
         const perguntaNova = await prisma.pergunta.create({
@@ -167,7 +167,7 @@ app.post('/registroPergunta', async (req, res) => {
                 titulo: titulo,
                 descricao: descricao,
                 cursoRelacionado: cursoRelacionado,
-                like: like,
+                likes: likes,
             }
         });
 
@@ -281,24 +281,48 @@ app.post('/comentario', async (req, res) => {
 
 
 app.post('/like', async (req, res) => {
-    const prisma = new PrismaClient();
-    const { id } = req.body;
+    const { id, idUsuario } = req.body;
     const idPergunta = parseInt(id);
+    const idUsuarioInt = parseInt(idUsuario);
 
     try {
         const pergunta = await prisma.pergunta.findUnique({
-            where: { id: idPergunta },
+            where: { id: idPergunta }
         });
-        console.log(pergunta)
+        const usuario = await prisma.user.findUnique({
+            where:
+                { id: idUsuarioInt }
+
+        });
 
         if (!pergunta) {
             return res.status(404).json({ error: 'Pergunta não encontrada' });
         }
 
+        const existingLike = await prisma.like.findFirst({
+            where: {
+                perguntaId: idPergunta,
+                usuarioId: idUsuarioInt,
+            },
+        });
+
+        if (existingLike) {
+            return res.status(400).json({ error: 'Usuário já deu like nesta pergunta' });
+        }
+
+        const newLike = await prisma.like.create({
+            data: {
+                
+                perguntaId: idPergunta,
+                
+                usuarioId: idUsuarioInt
+            },
+        });
+
         const updatedPergunta = await prisma.pergunta.update({
             where: { id: idPergunta },
             data: {
-                like: pergunta.like + 1
+                likes: pergunta.likes + 1,
             },
         });
 
@@ -309,3 +333,39 @@ app.post('/like', async (req, res) => {
     }
 });
 
+app.post('/buscaLike', async (req, res) => {
+    const { idUsuario } = req.body;
+    const idUsuarioInt = parseInt(idUsuario);
+
+
+    try {
+        const likes = await prisma.like.findMany({
+            where: {usuarioId: idUsuarioInt}
+            
+            
+        });
+
+        res.json(likes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+app.post('/verificaLike', async (req, res) => {
+    const { perguntaId, usuarioId } = req.body;
+
+    try {
+        const existingLike = await prisma.like.findFirst({
+            where: {
+                perguntaId: parseInt(perguntaId),
+                usuarioId: parseInt(usuarioId),
+            },
+        });
+
+        res.json({ hasLiked: !!existingLike });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});

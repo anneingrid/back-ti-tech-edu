@@ -38,7 +38,7 @@ model Pergunta {
   cursoRelacionado String
   comentarios      Comentario[]
   dataPergunta     DateTime     @default(now())
-  like             Int?
+  likes Int?
 }
 
 model Cursos {
@@ -58,4 +58,11 @@ model Comentario {
   dataComentario DateTime  @default(now())
   perguntaId     Int?
   pergunta       Pergunta? @relation(fields: [perguntaId], references: [id])
+}
+
+model Like {
+  id         Int      @id @default(autoincrement())
+  perguntaId Int
+  usuarioId  Int
+  @@unique([perguntaId, usuarioId])
 }
