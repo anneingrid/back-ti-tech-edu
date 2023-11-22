@@ -369,3 +369,37 @@ app.post('/verificaLike', async (req, res) => {
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
+
+
+app.post('/usuarioAltera', async (req, res) => {
+    const { id, nome, email, senha } = req.body;
+    const idUsuario = parseInt(id);
+    try {
+        const updatedUsuario = await prisma.user.update({
+            where: { id: idUsuario},
+            data: {
+                email: email, senha: senha, nome: nome
+            },
+        });
+
+        return res.status(200).json(updatedUsuario);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+app.post('/usuarioPerfil', async (req, res) => {
+    const { id } = req.body;
+    try {
+        const usuario = await prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        res.status(200).json({ usuario: usuario });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
