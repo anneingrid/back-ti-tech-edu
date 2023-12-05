@@ -41,6 +41,16 @@ model Pergunta {
   likes Int?
 }
 
+model Job {
+  id        String  @id @unique @default(uuid())
+  title     String
+  nameCompany String
+  location String
+  description   String
+  imageURL String
+  link String
+}
+
 model Cursos {
   id        Int     @id @default(autoincrement())
   categoria String
