@@ -49,7 +49,6 @@ model Job {
   description   String
   imageURL String
   link String
-
 }
 
 model Cursos {
